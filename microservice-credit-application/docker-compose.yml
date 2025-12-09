@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres-credit:
+    image: postgres:15-alpine
+    container_name: postgres-credit
+    environment:
+      POSTGRES_DB: coopcredit_credit
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_credit_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d coopcredit_credit"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - credit-network
+
+  credit-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: credit-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-credit:5432/coopcredit_credit
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      JWT_SECRET: CoopCreditSecretKeyForJWTTokenGeneration2024VerySecureKeyAtLeast256Bits
+      AUTH_SERVICE_URL: http://host.docker.internal:8081
+    depends_on:
+      postgres-credit:
+        condition: service_healthy
+    networks:
+      - credit-network
+
+volumes:
+  postgres_credit_data:
+
+networks:
+  credit-network:
+    driver: bridge

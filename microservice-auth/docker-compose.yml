@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # PostgreSQL para Auth Microservice
+  postgres-auth:
+    image: postgres:15-alpine
+    container_name: postgres-auth
+    environment:
+      POSTGRES_DB: coopcredit_auth
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5433"
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d coopcredit_auth"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - auth-network
+
+  # Auth Microservice
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/coopcredit_auth
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      JWT_SECRET: CoopCreditSecretKeyForJWTTokenGeneration2024VerySecureKeyAtLeast256Bits
+      JWT_EXPIRATION: 86400000
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+    networks:
+      - auth-network
+
+volumes:
+  postgres_auth_data:
+
+networks:
+  auth-network:
+    driver: bridge

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+        
+    
+  <modelVersion>4.0.0</modelVersion>
+        
+    
+  <groupId>com.mycompany</groupId>
+        
+    
+  <artifactId>CoopCredit</artifactId>
+        
+    
+  <version>1.0-SNAPSHOT</version>
+        
+    
+  <packaging>pom</packaging>
+        
+    
+  <properties>
+                
+           
+        
+    <java.version>21</java.version>
+            
+        
+    <spring.boot.version>4.0.0</spring.boot.version>
+            
+        
+    <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
+            
+    
+  </properties>
+        
+    
+     
+    
+  <!-- CONTROL CENTRALIZADO DE VERSIONES (solo versions) -->
+      
+    
+  <dependencyManagement>
+            
+        
+    <dependencies>
+                  
+            
+      <!-- BOM oficial Spring Boot 4 -->
+                  
+            
+      <dependency>
+                        
+                
+        <groupId>org.springframework.boot</groupId>
+                        
+                
+        <artifactId>spring-boot-dependencies</artifactId>
+                        
+                
+        <version>${spring.boot.version}</version>
+                        
+                
+        <type>pom</type>
+                        
+                
+        <scope>import</scope>
+                      
+            
+      </dependency>
+                  
+            
+      <!-- Versiones útiles centralizadas (opcionales) -->
+                  
+            
+      <dependency>
+                        
+                
+        <groupId>org.postgresql</groupId>
+                        
+                
+        <artifactId>postgresql</artifactId>
+                        
+                
+        <version>42.7.3</version>
+                      
+            
+      </dependency>
+                  
+            
+      <dependency>
+                        
+                
+        <groupId>org.projectlombok</groupId>
+                        
+                
+        <artifactId>lombok</artifactId>
+                        
+                
+        <version>1.18.30</version>
+                      
+            
+      </dependency>
+            
+            
+      <dependency>
+                        
+        <groupId>org.springframework.boot</groupId>
+                        
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+                        
+        <version>4.0.0</version>
+                    
+      </dependency>
+                
+        
+    </dependencies>
+          
+    
+  </dependencyManagement>
+      
+    
+  <build>
+            
+        
+    <pluginManagement>
+                  
+            
+      <plugins>
+                        
+                
+        <!-- Spring Boot Maven Plugin -->
+                        
+                
+        <plugin>
+                              
+                    
+          <groupId>org.springframework.boot</groupId>
+                              
+                    
+          <artifactId>spring-boot-maven-plugin</artifactId>
+                              
+                    
+          <version>${spring.boot.version}</version>
+                              
+                    
+          <configuration>
+                                    
+                        
+            <fork>true</fork>
+                                  
+                    
+          </configuration>
+                            
+                
+        </plugin>
+                        
+                
+        <!-- Compiler -->
+                        
+                
+        <plugin>
+                              
+                    
+          <groupId>org.apache.maven.plugins</groupId>
+                              
+                    
+          <artifactId>maven-compiler-plugin</artifactId>
+                              
+                    
+          <version>${maven.compiler.plugin.version}</version>
+                              
+                    
+          <configuration>
+                                    
+                        
+            <release>${java.version}</release>
+                                  
+                    
+          </configuration>
+                            
+                
+        </plugin>
+                      
+            
+      </plugins>
+                
+        
+    </pluginManagement>
+          
+    
+  </build>
+    
+    
+  <modules>
+          
+        
+    <module>microservice-auth</module>
+          
+      
+    <module>microservice-credit-application</module>
+          
+      
+    <module>credit-application-service</module>
+      
+  </modules>
+  
+</project>
