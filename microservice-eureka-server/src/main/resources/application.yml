@@ -5,8 +5,6 @@ spring:
   application:
     name: microservice-eureka-server
 
-    . 
-
 eureka:
   client:
     register-with-eureka: false
