@@ -43,3 +43,12 @@ logging:
   level:
     com.mycompany.microservice.credit: DEBUG
     org.springframework.security: DEBUG
+
+# Swagger/OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
