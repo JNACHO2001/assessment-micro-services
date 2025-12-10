@@ -17,12 +17,9 @@ public class CreditApplicationMapper {
         CreditApplicationEntity entity = new CreditApplicationEntity();
         entity.setId(domain.getId());
         entity.setUserId(domain.getUserId());
-        entity.setUserEmail(domain.getUserEmail());
-        entity.setUserName(domain.getUserName());
         entity.setAmount(domain.getAmount());
         entity.setTermMonths(domain.getTermMonths());
         entity.setPurpose(domain.getPurpose());
-        entity.setInterestRate(domain.getInterestRate());
         entity.setStatus(domain.getStatus());
         entity.setAnalystNotes(domain.getAnalystNotes());
         entity.setCreatedAt(domain.getCreatedAt());
@@ -37,12 +34,9 @@ public class CreditApplicationMapper {
         return new CreditApplication(
                 entity.getId(),
                 entity.getUserId(),
-                entity.getUserEmail(),
-                entity.getUserName(),
                 entity.getAmount(),
                 entity.getTermMonths(),
                 entity.getPurpose(),
-                entity.getInterestRate(),
                 entity.getStatus(),
                 entity.getAnalystNotes(),
                 entity.getCreatedAt(),

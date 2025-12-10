@@ -24,18 +24,27 @@ import java.util.List;
 public class CreditApplicationService {
 
     private final CreditApplicationRepository repository;
+    private final com.mycompany.microservice.credit.infrastructure.adapter.external.UserAdapter userAdapter;
 
-    public CreditApplicationService(CreditApplicationRepository repository) {
+    public CreditApplicationService(CreditApplicationRepository repository,
+            com.mycompany.microservice.credit.infrastructure.adapter.external.UserAdapter userAdapter) {
         this.repository = repository;
+        this.userAdapter = userAdapter;
     }
 
     /**
      * Create a new credit application (AFILIADO only).
      */
-    public CreditApplication create(Long userId, String userEmail, String userName,
+    public CreditApplication create(Long userId,
             BigDecimal amount, Integer termMonths, String purpose) {
+
+        // Verify user exists using WebClient
+        if (!userAdapter.userExists(userId)) {
+            throw new RuntimeException("User not found in Auth Service");
+        }
+
         CreditApplication application = new CreditApplication(
-                userId, userEmail, userName, amount, termMonths, purpose);
+                userId, amount, termMonths, purpose);
         return repository.save(application);
     }
 
@@ -92,14 +101,11 @@ public class CreditApplicationService {
     /**
      * Update application (ANALISTA, ADMIN only).
      */
-    public CreditApplication update(Long id, BigDecimal interestRate,
+    public CreditApplication update(Long id,
             String analystNotes, String statusStr) {
         CreditApplication application = repository.findById(id)
                 .orElseThrow(() -> ApplicationNotFoundException.byId(id));
 
-        if (interestRate != null) {
-            application.setInterestRate(interestRate);
-        }
         if (analystNotes != null) {
             application.setAnalystNotes(analystNotes);
         }

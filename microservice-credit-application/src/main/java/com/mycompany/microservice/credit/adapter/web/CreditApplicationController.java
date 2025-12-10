@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 public class CreditApplicationController {
 
     private final CreditApplicationService service;
+    
 
     public CreditApplicationController(CreditApplicationService service) {
         this.service = service;
@@ -41,16 +42,15 @@ public class CreditApplicationController {
     @PostMapping
     public ResponseEntity<ApplicationResponse> create(
             @Valid @RequestBody CreateApplicationRequest request,
+            
             Authentication authentication) {
 
         Map<String, Object> userDetails = getUserDetails(authentication);
         Long userId = (Long) userDetails.get("userId");
-        String email = (String) userDetails.get("email");
-        String role = (String) userDetails.get("role");
 
         // For AFILIADO, use their own info. For others, could be on behalf of user
         CreditApplication created = service.create(
-                userId, email, email, // userName defaults to email for now
+                userId,
                 request.amount(), request.termMonths(), request.purpose());
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -111,7 +111,7 @@ public class CreditApplicationController {
             @Valid @RequestBody UpdateApplicationRequest request) {
 
         CreditApplication updated = service.update(
-                id, request.interestRate(), request.analystNotes(), request.status());
+                id, request.analystNotes(), request.status());
 
         return ResponseEntity.ok(ApplicationResponse.from(updated));
     }

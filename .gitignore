@@ -1,2 +1,4 @@
 /microservice-credit-application/target/
 /microservice-auth/target/
+/risk-central-mock-service/target/
+/microservice-eureka-server/target/

@@ -19,12 +19,6 @@ public class CreditApplicationEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "user_email", nullable = false, length = 100)
-    private String userEmail;
-
-    @Column(name = "user_name", nullable = false, length = 100)
-    private String userName;
-
     @Column(name = "amount", nullable = false, precision = 15, scale = 2)
     private BigDecimal amount;
 
@@ -33,9 +27,6 @@ public class CreditApplicationEntity {
 
     @Column(name = "purpose", length = 500)
     private String purpose;
-
-    @Column(name = "interest_rate", precision = 5, scale = 2)
-    private BigDecimal interestRate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20, nullable = false)
@@ -70,22 +61,6 @@ public class CreditApplicationEntity {
         this.userId = userId;
     }
 
-    public String getUserEmail() {
-        return userEmail;
-    }
-
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public BigDecimal getAmount() {
         return amount;
     }
@@ -108,14 +83,6 @@ public class CreditApplicationEntity {
 
     public void setPurpose(String purpose) {
         this.purpose = purpose;
-    }
-
-    public BigDecimal getInterestRate() {
-        return interestRate;
-    }
-
-    public void setInterestRate(BigDecimal interestRate) {
-        this.interestRate = interestRate;
     }
 
     public ApplicationStatus getStatus() {

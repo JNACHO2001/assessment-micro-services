@@ -8,15 +8,12 @@ import java.time.LocalDateTime;
  * Pure domain - no framework dependencies.
  */
 public class CreditApplication {
-    
+
     private Long id;
     private Long userId;
-    private String userEmail;
-    private String userName;
     private BigDecimal amount;
     private Integer termMonths;
     private String purpose;
-    private BigDecimal interestRate;
     private ApplicationStatus status;
     private String analystNotes;
     private LocalDateTime createdAt;
@@ -26,11 +23,9 @@ public class CreditApplication {
     }
 
     // Constructor for new application
-    public CreditApplication(Long userId, String userEmail, String userName, 
-                            BigDecimal amount, Integer termMonths, String purpose) {
+    public CreditApplication(Long userId,
+            BigDecimal amount, Integer termMonths, String purpose) {
         this.userId = userId;
-        this.userEmail = userEmail;
-        this.userName = userName;
         this.amount = amount;
         this.termMonths = termMonths;
         this.purpose = purpose;
@@ -40,18 +35,15 @@ public class CreditApplication {
     }
 
     // Full constructor
-    public CreditApplication(Long id, Long userId, String userEmail, String userName,
-                            BigDecimal amount, Integer termMonths, String purpose,
-                            BigDecimal interestRate, ApplicationStatus status, String analystNotes,
-                            LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public CreditApplication(Long id, Long userId,
+            BigDecimal amount, Integer termMonths, String purpose,
+            ApplicationStatus status, String analystNotes,
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.userId = userId;
-        this.userEmail = userEmail;
-        this.userName = userName;
         this.amount = amount;
         this.termMonths = termMonths;
         this.purpose = purpose;
-        this.interestRate = interestRate;
         this.status = status;
         this.analystNotes = analystNotes;
         this.createdAt = createdAt;
@@ -67,9 +59,8 @@ public class CreditApplication {
         return this.status == ApplicationStatus.PENDIENTE;
     }
 
-    public void approve(BigDecimal interestRate, String notes) {
+    public void approve(String notes) {
         this.status = ApplicationStatus.APROBADA;
-        this.interestRate = interestRate;
         this.analystNotes = notes;
         this.updatedAt = LocalDateTime.now();
     }
@@ -86,39 +77,75 @@ public class CreditApplication {
     }
 
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getUserEmail() { return userEmail; }
-    public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
+    public Long getUserId() {
+        return userId;
+    }
 
-    public String getUserName() { return userName; }
-    public void setUserName(String userName) { this.userName = userName; }
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
-    public BigDecimal getAmount() { return amount; }
-    public void setAmount(BigDecimal amount) { this.amount = amount; }
+    public BigDecimal getAmount() {
+        return amount;
+    }
 
-    public Integer getTermMonths() { return termMonths; }
-    public void setTermMonths(Integer termMonths) { this.termMonths = termMonths; }
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
 
-    public String getPurpose() { return purpose; }
-    public void setPurpose(String purpose) { this.purpose = purpose; }
+    public Integer getTermMonths() {
+        return termMonths;
+    }
 
-    public BigDecimal getInterestRate() { return interestRate; }
-    public void setInterestRate(BigDecimal interestRate) { this.interestRate = interestRate; }
+    public void setTermMonths(Integer termMonths) {
+        this.termMonths = termMonths;
+    }
 
-    public ApplicationStatus getStatus() { return status; }
-    public void setStatus(ApplicationStatus status) { this.status = status; }
+    public String getPurpose() {
+        return purpose;
+    }
 
-    public String getAnalystNotes() { return analystNotes; }
-    public void setAnalystNotes(String analystNotes) { this.analystNotes = analystNotes; }
+    public void setPurpose(String purpose) {
+        this.purpose = purpose;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public ApplicationStatus getStatus() {
+        return status;
+    }
 
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public void setStatus(ApplicationStatus status) {
+        this.status = status;
+    }
+
+    public String getAnalystNotes() {
+        return analystNotes;
+    }
+
+    public void setAnalystNotes(String analystNotes) {
+        this.analystNotes = analystNotes;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }
