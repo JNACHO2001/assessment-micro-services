@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  postgres-auth:
+    image: postgres:15-alpine
+    container_name: postgres-auth
+    environment:
+      POSTGRES_DB: mi_base
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+
+  postgres-credit:
+    image: postgres:15-alpine
+    container_name: postgres-credit
+    environment:
+      POSTGRES_DB: solicitudes
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_credit_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_auth_data:
+  postgres_credit_data:

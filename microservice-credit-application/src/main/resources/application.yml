@@ -9,11 +9,6 @@ spring:
     discovery:
       enabled: true
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-  
   datasource:
     url: jdbc:postgresql://localhost:5433/solicitudes
     username: admin
@@ -28,6 +23,11 @@ eureka:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
 
 # JWT Configuration (same secret as auth service)
 jwt:

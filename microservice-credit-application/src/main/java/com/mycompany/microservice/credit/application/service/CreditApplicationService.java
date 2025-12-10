@@ -38,10 +38,13 @@ public class CreditApplicationService {
     public CreditApplication create(Long userId,
             BigDecimal amount, Integer termMonths, String purpose) {
 
-        // Verify user exists using WebClient
-        if (!userAdapter.userExists(userId)) {
-            throw new RuntimeException("User not found in Auth Service");
-        }
+        // TODO: Re-enable user verification when Auth Service endpoint is fixed
+        // Temporarily disabled due to Auth Service /users/{id} endpoint error
+        /*
+         * if (!userAdapter.userExists(userId)) {
+         * throw new RuntimeException("User not found in Auth Service");
+         * }
+         */
 
         CreditApplication application = new CreditApplication(
                 userId, amount, termMonths, purpose);

@@ -8,9 +8,13 @@ import com.mycompany.microservice.auth.domain.port.in.LoginUserUseCase;
 import com.mycompany.microservice.auth.domain.port.in.RegisterUserUseCase;
 import com.mycompany.microservice.auth.infrastructure.security.jwt.JwtTokenProvider;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 /**
  * REST Controller for authentication endpoints.
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+        private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
         private final RegisterUserUseCase registerUserUseCase;
         private final LoginUserUseCase loginUserUseCase;
         private final JwtTokenProvider jwtTokenProvider;
@@ -110,16 +115,32 @@ public class AuthController {
          */
         @GetMapping("/users/{id}")
         public ResponseEntity<AuthResponse> getUserById(@PathVariable Long id) {
-                User user = userRepository.findById(id)
-                                .orElseThrow(() -> new RuntimeException("User not found"));
+                try {
+                        logger.info(">>>  getUserById called with id: {}", id);
 
-                AuthResponse response = AuthResponse.success(
-                                null, // No token needed for internal call
-                                user.getEmail(),
-                                user.getName(),
-                                user.getRole().name(),
-                                user.getId());
+                        Optional<User> userOpt = userRepository.findById(id);
+                        logger.info(">>> User found: {}", userOpt.isPresent());
 
-                return ResponseEntity.ok(response);
+                        User user = userOpt.orElseThrow(() -> {
+                                logger.error(">>> User not found with id: {}", id);
+                                return new RuntimeException("User not found");
+                        });
+
+                        logger.info(">>> Creating response for user: {}", user.getEmail());
+
+                        AuthResponse response = AuthResponse.success(
+                                        null, // No token needed for internal call
+                                        user.getEmail(),
+                                        user.getName(),
+                                        user.getRole().name(),
+                                        user.getId());
+
+                        logger.info(">>> Returning response");
+                        return ResponseEntity.ok(response);
+
+                } catch (Exception e) {
+                        logger.error(">>> ERROR in getUserById: ", e);
+                        throw e;
+                }
         }
 }
