@@ -23,8 +23,8 @@ services:
   # Servidor Eureka para descubrimiento de servicios
   eureka-server:
     build:
-      context: ./eureka-server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: eureka-server/Dockerfile
     container_name: eureka-server
     ports:
       - "8761:8761"
@@ -40,8 +40,8 @@ services:
   # Microservicio de Autenticación (JWT, Usuarios)
   auth-service:
     build:
-      context: ./auth-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: auth-service/Dockerfile
     container_name: auth-service
     ports:
       - "8081:8081"
@@ -64,8 +64,8 @@ services:
   # Microservicio de Solicitudes de Crédito
   solicitudes-service:
     build:
-      context: ./solicitudes-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: solicitudes-service/Dockerfile
     container_name: solicitudes-service
     ports:
       - "8082:8082"
