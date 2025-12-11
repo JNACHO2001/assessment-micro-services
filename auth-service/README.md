@@ -35,3 +35,9 @@ El servicio se configura mediante `application.yml` y variables de entorno inyec
 *   `SPRING_DATASOURCE_URL`: Conexión a `coopcredit_auth`.
 *   `JWT_SECRET`: Clave para firmar tokens.
 *   `EUREKA_CLIENT_SERVICEURL_DEFAULTZONE`: URL del servidor Eureka.
+
+## 🐳 Despliegue
+
+Utiliza un **Dockerfile Multi-stage**:
+1.  **Build**: Compila el código usando Maven y JDK 17.
+2.  **Run**: Ejecuta el JAR resultante en una imagen ligera JRE 17 Alpine.

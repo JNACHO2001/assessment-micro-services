@@ -17,13 +17,6 @@ Acceda al panel de control en: [http://localhost:8761](http://localhost:8761)
 
 ## 🐳 Despliegue
 
-Se despliega como parte del stack de Docker Compose:
-
-```yaml
-eureka-server:
-  image: eureka-server
-  ports:
-    - "8761:8761"
-  healthcheck:
-    test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
-```
+Utiliza un **Dockerfile Multi-stage**:
+1.  **Build**: Compila el código usando Maven y JDK 17.
+2.  **Run**: Ejecuta el JAR resultante en una imagen ligera JRE 17 Alpine.

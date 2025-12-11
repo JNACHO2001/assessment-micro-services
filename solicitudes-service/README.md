@@ -35,3 +35,9 @@ Este servicio utiliza `WebClient` configurado con `@LoadBalanced` para comunicar
 // UserAdapter.java
 this.webClient = webClientBuilder.baseUrl("lb://AUTH-SERVICE").build();
 ```
+
+## 🐳 Despliegue
+
+Utiliza un **Dockerfile Multi-stage**:
+1.  **Build**: Compila el código usando Maven y JDK 17.
+2.  **Run**: Ejecuta el JAR resultante en una imagen ligera JRE 17 Alpine.

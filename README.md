@@ -19,7 +19,7 @@ El sistema sigue una **Arquitectura Hexagonal (Puertos y Adaptadores)** estricta
 *   **Spring Boot 3.2.0**
 *   **Spring Cloud 2023.0.0** (Eureka, LoadBalancer)
 *   **PostgreSQL 17 (Alpine)**
-*   **Docker & Docker Compose**
+*   **Docker & Docker Compose** (Multi-stage builds)
 *   **Maven**
 
 ## 📂 Estructura del Proyecto
@@ -40,7 +40,6 @@ micro-services/
 ### Prerrequisitos
 
 *   Docker y Docker Compose instalados.
-*   Java 17 y Maven instalados (para compilación local).
 
 ### Pasos para Ejecutar
 
@@ -51,19 +50,13 @@ micro-services/
     JWT_EXPIRATION=86400000
     ```
 
-2.  **Compilar el Proyecto**:
-    Genere los artefactos JAR para cada microservicio:
-    ```bash
-    mvn clean package -DskipTests
-    ```
-
-3.  **Levantar la Infraestructura**:
-    Construya e inicie los contenedores con Docker Compose:
+2.  **Levantar la Infraestructura**:
+    No es necesario compilar localmente. Docker se encarga de todo el proceso de construcción (Multi-stage build).
     ```bash
     docker-compose up -d --build
     ```
 
-4.  **Verificar Servicios**:
+3.  **Verificar Servicios**:
     *   **Eureka Dashboard**: [http://localhost:8761](http://localhost:8761)
     *   **Auth Service Health**: [http://localhost:8081/actuator/health](http://localhost:8081/actuator/health)
     *   **Solicitudes Service Health**: [http://localhost:8082/actuator/health](http://localhost:8082/actuator/health)
