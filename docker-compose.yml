@@ -1,30 +1,94 @@
-version: '3.8'
-
 services:
-  postgres-auth:
-    image: postgres:15-alpine
-    container_name: postgres-auth
+  # Base de datos PostgreSQL compartida para todos los microservicios
+  postgres-microservices-coopcredit:
+    image: postgres:17-alpine
+    container_name: postgres-microservices-coopcredit
     environment:
-      POSTGRES_DB: mi_base
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin123
-    ports:
-      - "5433:5432"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     volumes:
-      - postgres_auth_data:/var/lib/postgresql/data
+      # Persistencia de datos
+      - pg_data:/var/lib/postgresql/data
+      # Scripts de inicialización (creación de bases de datos)
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    networks:
+      - micro-net
+    restart: unless-stopped
 
-  postgres-credit:
-    image: postgres:15-alpine
-    container_name: postgres-credit
-    environment:
-      POSTGRES_DB: solicitudes
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin123
+  # Servidor Eureka para descubrimiento de servicios
+  eureka-server:
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    container_name: eureka-server
     ports:
-      - "5434:5432"
-    volumes:
-      - postgres_credit_data:/var/lib/postgresql/data
+      - "8761:8761"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    networks:
+      - micro-net
+    restart: unless-stopped
+
+  # Microservicio de Autenticación (JWT, Usuarios)
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_APPLICATION_NAME=AUTH-SERVICE
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-microservices-coopcredit:5432/coopcredit_auth
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+    depends_on:
+      - postgres-microservices-coopcredit
+      - eureka-server
+    networks:
+      - micro-net
+    restart: unless-stopped
+
+  # Microservicio de Solicitudes de Crédito
+  solicitudes-service:
+    build:
+      context: ./solicitudes-service
+      dockerfile: Dockerfile
+    container_name: solicitudes-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_APPLICATION_NAME=SOLICITUDES-SERVICE
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-microservices-coopcredit:5432/coopcredit_solicitudes
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - AUTH_SERVICE_BASE_URL=http://AUTH-SERVICE
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - eureka-server
+      - auth-service
+    networks:
+      - micro-net
+    restart: unless-stopped
 
 volumes:
-  postgres_auth_data:
-  postgres_credit_data:
+  pg_data:
+
+
+networks:
+  micro-net:
+    driver: bridge

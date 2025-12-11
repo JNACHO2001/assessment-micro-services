@@ -1,165 +1,81 @@
-# 🏦 CoopCredit - Sistema de Solicitudes de Crédito
+# CoopCredit Microservices Architecture
 
-Sistema de microservicios para gestión de solicitudes de crédito cooperativo con arquitectura hexagonal.
+Este repositorio contiene la implementación de la arquitectura de microservicios para el sistema **CoopCredit**. El proyecto está estructurado como un monorepo y utiliza **Spring Boot**, **Spring Cloud Netflix Eureka**, y **PostgreSQL** orquestados mediante **Docker Compose**.
 
-## 🏗️ Arquitectura
+## 🏗 Arquitectura
+
+El sistema sigue una **Arquitectura Hexagonal (Puertos y Adaptadores)** estricta para desacoplar la lógica de negocio de la infraestructura.
+
+### Componentes Principales
+
+*   **Eureka Server (`eureka-server`)**: Servidor de descubrimiento de servicios. Permite que los microservicios se registren y se encuentren entre sí dinámicamente.
+*   **Auth Service (`auth-service`)**: Microservicio encargado de la gestión de usuarios y autenticación mediante **JWT**.
+*   **Solicitudes Service (`solicitudes-service`)**: Microservicio para la gestión de solicitudes de crédito. Se comunica con `auth-service` para validar usuarios.
+*   **PostgreSQL (`postgres-microservices-coopcredit`)**: Instancia única de base de datos compartida que aloja bases de datos independientes para cada servicio (`coopcredit_auth`, `coopcredit_solicitudes`).
+
+## 🚀 Tecnologías
+
+*   **Java 17**
+*   **Spring Boot 3.2.0**
+*   **Spring Cloud 2023.0.0** (Eureka, LoadBalancer)
+*   **PostgreSQL 17 (Alpine)**
+*   **Docker & Docker Compose**
+*   **Maven**
+
+## 📂 Estructura del Proyecto
 
 ```
-CoopCredit/
-├── microservice-eureka-server/     # Service Discovery (Puerto 8761)
-├── microservice-auth/              # Autenticación y Usuarios (Puerto 8081)
-├── microservice-credit-application/# Gestión de Solicitudes (Puerto 8082)
-├── risk-central-mock-service/      # Evaluación de Riesgo Mock (Puerto 8083)
-└── docker-compose.yml             # PostgreSQL compartida (Puerto 5433)
+micro-services/
+├── docker-compose.yml      # Orquestación de contenedores
+├── .env                    # Variables de entorno (Secretos)
+├── pom.xml                 # Configuración Maven padre
+├── db/init/                # Scripts SQL de inicialización
+├── eureka-server/          # Servidor de descubrimiento
+├── auth-service/           # Servicio de Autenticación
+└── solicitudes-service/    # Servicio de Solicitudes
 ```
 
-## 🗄️ Base de Datos
+## 🛠 Configuración y Ejecución
 
-**PostgreSQL Compartida** en puerto **5433** con dos bases de datos:
+### Prerrequisitos
 
-| Base de Datos | Servicio | Tablas |
-|---------------|----------|--------|
-| `mi_base` | Auth | `users` |
-| `solicitudes` | Credit | `credit_applications` |
+*   Docker y Docker Compose instalados.
+*   Java 17 y Maven instalados (para compilación local).
 
-**Credenciales:**
-- Usuario: `admin`
-- Password: `admin123`
+### Pasos para Ejecutar
 
-## 🚀 Inicio Rápido
+1.  **Configurar Variables de Entorno**:
+    Asegúrese de tener el archivo `.env` en la raíz con las siguientes variables:
+    ```properties
+    JWT_SECRET=su_clave_secreta_muy_segura_y_larga
+    JWT_EXPIRATION=86400000
+    ```
 
-### 1. Iniciar PostgreSQL
-```bash
-docker-compose up -d
-```
+2.  **Compilar el Proyecto**:
+    Genere los artefactos JAR para cada microservicio:
+    ```bash
+    mvn clean package -DskipTests
+    ```
 
-### 2. Iniciar Servicios (en orden)
+3.  **Levantar la Infraestructura**:
+    Construya e inicie los contenedores con Docker Compose:
+    ```bash
+    docker-compose up -d --build
+    ```
 
-```bash
-# 1. Eureka Server
-cd microservice-eureka-server
-mvn spring-boot:run
+4.  **Verificar Servicios**:
+    *   **Eureka Dashboard**: [http://localhost:8761](http://localhost:8761)
+    *   **Auth Service Health**: [http://localhost:8081/actuator/health](http://localhost:8081/actuator/health)
+    *   **Solicitudes Service Health**: [http://localhost:8082/actuator/health](http://localhost:8082/actuator/health)
 
-# 2. Auth Service
-cd microservice-auth
-mvn spring-boot:run
+## 📐 Detalles de Arquitectura Hexagonal
 
-# 3. Credit Service
-cd microservice-credit-application
-mvn spring-boot:run
+Para cumplir con los principios de diseño limpio:
+*   **Dominio**: Contiene modelos y puertos (interfaces). No tiene dependencias de frameworks.
+*   **Aplicación**: Contiene casos de uso y servicios de aplicación.
+*   **Infraestructura**: Contiene la implementación de adaptadores (persistencia, controladores REST, clientes externos).
+    *   **Controllers**: Ubicados en `infrastructure/controllers`.
+    *   **Exceptions**: Ubicadas en `infrastructure/controllers/exception`.
 
-# 4. Risk Service
-cd risk-central-mock-service
-mvn spring-boot:run
-```
-
-## 📡 Endpoints Principales
-
-### Auth Service (8081)
-- `POST /api/auth/register` - Registrar usuario
-- `POST /api/auth/login` - Autenticación
-- `GET /api/auth/health` - Health check
-
-### Credit Service (8082)
-- `POST /api/applications` - Crear solicitud
-- `GET /api/applications/my` - Mis solicitudes
-- `GET /api/applications/{id}` - Consultar por ID
-- `GET /api/applications/health` - Health check
-
-### Risk Service (8083)
-- `POST /risk-evaluation` - Evaluar riesgo crediticio
-
-### Eureka Dashboard
-- `http://localhost:8761` - Dashboard de servicios
-
-## 🧪 Pruebas con Postman
-
-Importa la colección: `CoopCredit.postman_collection.json`
-
-### Flujo de Prueba Completo
-
-1. **Registrar Usuario:**
-```json
-POST http://localhost:8081/api/auth/register
-{
-  "document": "12345678",
-  "name": "Juan Pérez",
-  "email": "juan@test.com",
-  "password": "password123",
-  "salary": 5000.00
-}
-```
-
-2. **Crear Solicitud:**
-```json
-POST http://localhost:8082/api/applications
-Authorization: Bearer {token}
-{
-  "amount": 250000.00,
-  "termMonths": 36,
-  "purpose": "Compra de maquinaria"
-}
-```
-
-3. **Evaluar Riesgo:**
-```json
-POST http://localhost:8083/risk-evaluation
-{
-  "documento": "12345678",
-  "monto": 100000,
-  "plazo": 12
-}
-```
-
-## 🛠️ Tecnologías
-
-- **Spring Boot** 3.2.0
-- **Spring Cloud** 2023.0.0
-- **PostgreSQL** 15
-- **Eureka** Service Discovery
-- **JWT** para autenticación
-- **Maven** para gestión de dependencias
-
-## 📋 Requisitos
-
-- Java 21+
-- Maven 3.8+
-- Docker & Docker Compose
-- PostgreSQL (vía Docker)
-
-## 🔐 Roles y Permisos
-
-| Rol | Permisos |
-|-----|----------|
-| **AFILIADO** | Ver y crear sus propias solicitudes |
-| **ANALISTA** | Ver y actualizar todas las solicitudes |
-| **ADMIN** | Acceso completo (CRUD) |
-
-## 📊 Estado del Sistema
-
-✅ **Funcionando 100%:**
-- Autenticación JWT
-- Registro de usuarios
-- Creación de solicitudes
-- Consulta de solicitudes
-- Evaluación de riesgo
-- Service Discovery
-- PostgreSQL compartida
-
-## 📖 Documentación Adicional
-
-- Ver READMEs individuales en cada microservicio
-- Colección de Postman incluida
-- Guía de ejecución en `/docs`
-
-## 🤝 Contribuir
-
-1. Fork el proyecto
-2. Crea una rama para tu feature
-3. Commit tus cambios
-4. Push a la rama
-5. Abre un Pull Request
-
-## 📄 Licencia
-
-Este proyecto es de código abierto.
+---
+**CoopCredit Team** - 2025

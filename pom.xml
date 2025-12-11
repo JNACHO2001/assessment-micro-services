@@ -28,7 +28,7 @@
            
         
     
-    <java.version>21</java.version>
+    <java.version>17</java.version>
                 
         
     
@@ -187,14 +187,15 @@
                     
           
           <configuration>
-                                                
-                        
-            
             <fork>true</fork>
-                                              
-                    
-          
           </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>repackage</goal>
+              </goals>
+            </execution>
+          </executions>
                                       
                 
         
@@ -254,11 +255,11 @@
               
         
     
-    <module>microservice-auth</module>
+    <module>auth-service</module>
               
       
     
-    <module>microservice-credit-application</module>
+    <module>solicitudes-service</module>
               
       
 
@@ -266,7 +267,7 @@
     
     <module>risk-central-mock-service</module>
       
-    <module>microservice-eureka-server</module>
+    <module>eureka-server</module>
   </modules>
     
 
